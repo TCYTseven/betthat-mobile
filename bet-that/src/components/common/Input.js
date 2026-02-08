@@ -27,7 +27,7 @@ const Input = ({
       onChangeText={onChangeText}
       placeholder={placeholder}
       placeholderTextColor={COLORS.muted}
-      multiline={multiline}
+      multiline={!!multiline}
       accessibilityLabel={label || placeholder}
       {...props}
     />
@@ -38,22 +38,27 @@ const Input = ({
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.lg,
   },
   label: {
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: SPACING.xs,
+    color: COLORS.muted,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: SPACING.sm,
   },
   input: {
-    borderWidth: 1,
+    borderWidth: 0,
+    borderBottomWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: RADIUS.md,
-    padding: SPACING.sm,
-    fontSize: 15,
+    borderRadius: 0,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: 0,
+    fontSize: 16,
+    fontWeight: '400',
     color: COLORS.text,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'transparent',
     minHeight: 44,
   },
   multiline: {
@@ -61,17 +66,18 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   inputError: {
-    borderColor: COLORS.danger,
+    borderBottomColor: COLORS.danger,
   },
   error: {
     color: COLORS.danger,
     fontSize: 12,
-    marginTop: SPACING.xs,
+    fontWeight: '500',
+    marginTop: SPACING.sm,
   },
   helper: {
     color: COLORS.muted,
-    fontSize: 12,
-    marginTop: SPACING.xs,
+    fontSize: 11,
+    marginTop: SPACING.sm,
   },
 });
 

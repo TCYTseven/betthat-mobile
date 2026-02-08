@@ -1,207 +1,152 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Screen, TopBar } from '../components/layout';
-import { Button, Card, Input, BetCard, EmptyState, SegmentedControl } from '../components/common';
+import { Button, Card, BetCard, EmptyState } from '../components/common';
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants';
 import { useBets } from '../context/BetContext';
-import { parseLinkId } from '../utils/links';
 import { getBetStatus } from '../utils/betMath';
 
 const HomeScreen = ({ navigation }) => {
-  const { bets, sampleBetId } = useBets();
-  const [betLink, setBetLink] = useState('');
-  const [linkType, setLinkType] = useState('event');
-  const [error, setError] = useState('');
+  const { bets } = useBets();
 
-  const recentBets = bets.filter((bet) => !bet.isExample).slice(0, 3);
-
-  const handleOpenLink = () => {
-    const id = parseLinkId(betLink, linkType === 'event' ? 'bet' : 'creator');
-    if (!id) {
-      setError('Paste a valid link.');
-      return;
-    }
-    setError('');
-    if (linkType === 'event') {
-      navigation.navigate('BetDetail', { betId: id });
-    } else {
-      navigation.navigate('CreatorDashboard', { creatorId: id });
-    }
-  };
+  // Only show the very latest active bet if it exists, otherwise show empty state
+  const activeBets = bets.filter((bet) => !bet.isExample).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const latestBet = activeBets[0];
 
   return (
     <Screen>
-      <TopBar onRightPress={() => navigation.navigate('Guide')} />
-      <Text style={styles.headline}>Quick bets, clear results</Text>
-      <Text style={styles.subhead}>Tap below to start or open a link.</Text>
-      <View style={styles.actionRow}>
-        <Card style={styles.actionCard}>
-          <View style={styles.actionIcon}>
-            <Feather name="plus" size={20} color={COLORS.primary} />
+      <TopBar 
+        onRightPress={() => navigation.navigate('Guide')} 
+        rightIcon="help-circle"
+      />
+      
+      <View style={styles.header}>
+        <Text style={styles.headline}>Bet That</Text>
+        <Text style={styles.subhead}>Friendly bets, zero friction.</Text>
+      </View>
+
+      <View style={styles.mainAction}>
+        <Card style={styles.heroCard}>
+          <View style={styles.heroIcon}>
+            <Feather name="plus" size={28} color="#FFFFFF" />
           </View>
-          <Text style={styles.actionTitle}>Create a bet</Text>
-          <Text style={styles.actionCopy}>Event, outcomes, close time.</Text>
+          <Text style={styles.heroTitle}>Create New Bet</Text>
+          <Text style={styles.heroCopy}>Set up an event and share the code with friends.</Text>
           <Button
-            label="New bet"
+            label="Create Bet"
+            variant="secondary"
             onPress={() => navigation.navigate('Create')}
             accessibilityLabel="Create a new bet"
           />
         </Card>
-        <Card style={styles.actionCard}>
-          <View style={styles.actionIcon}>
-            <Feather name="link" size={20} color={COLORS.primary} />
-          </View>
-          <Text style={styles.actionTitle}>Join by link</Text>
-          <Text style={styles.actionCopy}>Event link or creator link.</Text>
-          <View style={styles.segmented}>
-            <SegmentedControl
-              options={[
-                { label: 'Event', value: 'event' },
-                { label: 'Creator', value: 'creator' },
-              ]}
-              value={linkType}
-              onChange={(value) => {
-                setLinkType(value);
-                if (error) {
-                  setError('');
-                }
-              }}
-            />
-          </View>
-          <Input
-            value={betLink}
-            onChangeText={(text) => {
-              setBetLink(text);
-              if (error) {
-                setError('');
-              }
-            }}
-            placeholder={
-              linkType === 'event'
-                ? 'betthat.app/bet/...'
-                : 'betthat.app/creator/...'
-            }
-            error={error}
-            autoCapitalize="none"
-          />
-          <Button
-            label={linkType === 'event' ? 'Open bet' : 'Open creator view'}
-            variant="secondary"
-            onPress={handleOpenLink}
-          />
-        </Card>
       </View>
-      <Card style={styles.guideCard}>
-        <View style={styles.guideRow}>
-          <View style={styles.actionIcon}>
-            <Feather name="play-circle" size={20} color={COLORS.primary} />
+
+      {latestBet && (
+        <View style={styles.recentSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Continue betting</Text>
+            <Pressable onPress={() => navigation.navigate('MyBets')}>
+              <Text style={styles.viewAll}>View all</Text>
+            </Pressable>
           </View>
-          <View style={styles.guideText}>
-            <Text style={styles.actionTitle}>How it works</Text>
-            <Text style={styles.actionCopy}>Three quick steps, no accounts.</Text>
-          </View>
-        </View>
-        <Button
-          label="View guide"
-          variant="secondary"
-          onPress={() => navigation.navigate('Guide')}
-        />
-      </Card>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Recent bets</Text>
-        <Button
-          label="Example bet"
-          variant="ghost"
-          onPress={() => navigation.navigate('BetDetail', { betId: sampleBetId })}
-        />
-      </View>
-      {recentBets.length === 0 ? (
-        <EmptyState
-          icon="flag"
-          title="No bets yet"
-          message="Create a bet or open a shared link to get started."
-          actionLabel="Create your first bet"
-          onAction={() => navigation.navigate('Create')}
-        />
-      ) : (
-        recentBets.map((bet) => (
           <BetCard
-            key={bet.id}
-            bet={bet}
-            status={getBetStatus(bet, Date.now())}
-            onPress={() => navigation.navigate('BetDetail', { betId: bet.id })}
+            bet={latestBet}
+            status={getBetStatus(latestBet, Date.now())}
+            onPress={() => navigation.navigate('BetDetail', { betId: latestBet.id })}
           />
-        ))
+        </View>
+      )}
+
+      {!latestBet && (
+        <View style={styles.tipContainer}>
+          <Feather name="info" size={16} color={COLORS.muted} />
+          <Text style={styles.tipText}>Tip: Share your bet link in any group chat to let friends join.</Text>
+        </View>
       )}
     </Screen>
   );
 };
 
 const styles = StyleSheet.create({
+  header: {
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.xxl,
+  },
   headline: {
-    fontSize: TYPOGRAPHY.headline,
-    fontWeight: '700',
+    fontSize: 40,
+    fontWeight: '300',
     color: COLORS.text,
+    letterSpacing: -1.5,
   },
   subhead: {
-    fontSize: TYPOGRAPHY.body,
+    fontSize: 16,
+    fontWeight: '400',
     color: COLORS.muted,
-    marginTop: SPACING.xs,
-    marginBottom: SPACING.lg,
+    marginTop: SPACING.sm,
   },
-  actionRow: {
-    gap: SPACING.lg,
+  mainAction: {
+    marginBottom: SPACING.xxl,
   },
-  actionCard: {
-    marginBottom: SPACING.md,
+  heroCard: {
+    padding: SPACING.xxl,
+    alignItems: 'center',
+    backgroundColor: COLORS.primary,
+    borderWidth: 0,
+    borderRadius: 0,
   },
-  actionIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: COLORS.highlight,
+  heroIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: SPACING.lg,
+  },
+  heroTitle: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#FFFFFF',
     marginBottom: SPACING.sm,
   },
-  actionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.text,
-  },
-  actionCopy: {
+  heroCopy: {
     fontSize: 14,
-    color: COLORS.muted,
-    marginTop: SPACING.xs,
-    marginBottom: SPACING.md,
+    fontWeight: '400',
+    color: 'rgba(255, 255, 255, 0.8)',
+    textAlign: 'center',
+    marginBottom: SPACING.xl,
+    lineHeight: 22,
   },
-  segmented: {
-    marginBottom: SPACING.md,
+  recentSection: {
+    marginTop: SPACING.xl,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: SPACING.xl,
-    marginBottom: SPACING.md,
-  },
-  guideCard: {
-    marginTop: SPACING.md,
-  },
-  guideRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-    marginBottom: SPACING.sm,
-  },
-  guideText: {
-    flex: 1,
+    marginBottom: SPACING.lg,
+    paddingBottom: SPACING.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: '600',
-    color: COLORS.text,
+    color: COLORS.muted,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  viewAll: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: COLORS.primary,
+  },
+  tipContainer: {
+    display: 'none',
+  },
+  tipText: {
+    display: 'none',
   },
 });
 

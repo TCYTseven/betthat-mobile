@@ -1,49 +1,32 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { COLORS, RADIUS, SPACING } from '../../constants';
+import { View, StyleSheet } from 'react-native';
+import { COLORS, SPACING } from '../../constants';
 
-const StepIndicator = ({ current, total }) => (
-  <View style={styles.container}>
-    <View style={styles.dots}>
-      {Array.from({ length: total }).map((_, index) => (
-        <View
-          key={`step-${index}`}
-          style={[
-            styles.dot,
-            index === current && styles.dotActive,
-          ]}
-        />
-      ))}
+const StepIndicator = ({ current, total }) => {
+  const progress = ((current + 1) / total) * 100;
+  
+  return (
+    <View style={styles.container}>
+      <View style={styles.track}>
+        <View style={[styles.progress, { width: `${progress}%` }]} />
+      </View>
     </View>
-    <Text style={styles.label}>
-      Step {current + 1} of {total}
-    </Text>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.xxl,
+    marginHorizontal: -SPACING.xl,
   },
-  dots: {
-    flexDirection: 'row',
-    gap: SPACING.sm,
-    marginBottom: SPACING.xs,
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: RADIUS.pill,
+  track: {
+    height: 3,
     backgroundColor: COLORS.border,
+    overflow: 'hidden',
   },
-  dotActive: {
-    width: 22,
+  progress: {
+    height: '100%',
     backgroundColor: COLORS.primary,
-  },
-  label: {
-    color: COLORS.muted,
-    fontSize: 13,
-    fontWeight: '600',
   },
 });
 

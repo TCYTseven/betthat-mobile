@@ -26,31 +26,28 @@ const SegmentedControl = ({ options, value, onChange }) => (
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.pill,
-    padding: SPACING.xs,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
   },
   option: {
     flex: 1,
-    paddingVertical: SPACING.sm,
-    borderRadius: RADIUS.pill,
+    paddingVertical: SPACING.md,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
     alignItems: 'center',
+    marginBottom: -1,
   },
   optionActive: {
-    backgroundColor: '#FFFFFF',
-    shadowColor: COLORS.shadow,
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
+    borderBottomColor: COLORS.primary,
   },
   label: {
     color: COLORS.muted,
-    fontWeight: '600',
+    fontWeight: '500',
+    fontSize: 14,
   },
   labelActive: {
-    color: COLORS.primary,
+    color: COLORS.text,
+    fontWeight: '600',
   },
 });
 

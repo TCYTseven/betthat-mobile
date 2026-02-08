@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BetProvider } from './context/BetContext';
 import { OnboardingProvider } from './context/OnboardingContext';
 import RootNavigator from './navigation/RootNavigator';
@@ -23,7 +23,7 @@ const App = () => {
   }, [isReady]);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <SafeAreaProvider>
         <OnboardingProvider onReady={handleReady}>
           <BetProvider>
@@ -33,7 +33,7 @@ const App = () => {
           </BetProvider>
         </OnboardingProvider>
       </SafeAreaProvider>
-    </GestureHandlerRootView>
+    </View>
   );
 };
 

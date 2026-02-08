@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, RefreshControl, Platform } from 'react-native';
 import { Screen, TopBar } from '../components/layout';
 import { BetCard, EmptyState, SegmentedControl } from '../components/common';
 import { COLORS, SPACING } from '../constants';
@@ -28,6 +28,7 @@ const MyBetsScreen = ({ navigation }) => {
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
+          tintColor={COLORS.primary}
           onRefresh={() => {
             setRefreshing(true);
             setTimeout(() => setRefreshing(false), 600);
@@ -36,29 +37,33 @@ const MyBetsScreen = ({ navigation }) => {
       }
     >
       <TopBar title="My Bets" />
-      <SegmentedControl
-        options={[
-          { label: 'Created', value: 'created' },
-          { label: 'Joined', value: 'joined' },
-        ]}
-        value={tab}
-        onChange={setTab}
-      />
+
+      <View style={styles.tabsContainer}>
+        <SegmentedControl
+          options={[
+            { label: `Created`, value: 'created' },
+            { label: `Joined`, value: 'joined' },
+          ]}
+          value={tab}
+          onChange={setTab}
+        />
+      </View>
+
       <View style={styles.list}>
         {list.length === 0 ? (
           <EmptyState
             icon="flag"
-            title={tab === 'created' ? 'No created bets' : 'No joined bets'}
+            title={tab === 'created' ? 'No bets' : 'No bets'}
             message={
               tab === 'created'
-                ? 'Create a bet and share the link with friends.'
-                : 'Join a shared bet to see it here.'
+                ? "Create your first bet"
+                : "Join a bet to see it here"
             }
-            actionLabel={tab === 'created' ? 'Create a bet' : 'Open a bet'}
+            actionLabel={tab === 'created' ? 'Create' : 'Join'}
             onAction={() =>
               tab === 'created'
                 ? navigation.navigate('Create')
-                : navigation.navigate('Home')
+                : navigation.navigate('Join')
             }
           />
         ) : (
@@ -77,8 +82,11 @@ const MyBetsScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  tabsContainer: {
+    marginBottom: SPACING.xxl,
+  },
   list: {
-    marginTop: SPACING.lg,
+    gap: SPACING.lg,
   },
 });
 

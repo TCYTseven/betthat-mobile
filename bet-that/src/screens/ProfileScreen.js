@@ -1,19 +1,70 @@
-import React from 'react';
-import { Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { Text, StyleSheet, View } from 'react-native';
 import { Screen, TopBar } from '../components/layout';
-import { Button, Card } from '../components/common';
+import { Button, Card, Input } from '../components/common';
 import { COLORS, SPACING } from '../constants';
 import { useOnboarding } from '../context/OnboardingContext';
 import { useBets } from '../context/BetContext';
 
 const ProfileScreen = ({ navigation }) => {
-  const { resetOnboarding } = useOnboarding();
+  const { userName, updateUserName, resetOnboarding } = useOnboarding();
   const { resetBets, sampleBetId } = useBets();
+  const [editingName, setEditingName] = useState(false);
+  const [tempName, setTempName] = useState(userName);
+
+  const handleSaveName = () => {
+    if (tempName.trim()) {
+      updateUserName(tempName.trim());
+      setEditingName(false);
+    }
+  };
 
   return (
     <Screen>
-      <TopBar title="Settings" />
+      <TopBar title="Profile" />
+      
       <Card>
+        <Text style={styles.sectionTitle}>Your Identity</Text>
+        {editingName ? (
+          <View>
+            <Input
+              value={tempName}
+              onChangeText={setTempName}
+              placeholder="Your name"
+              autoFocus
+            />
+            <View style={styles.nameActions}>
+              <Button
+                label="Cancel"
+                variant="ghost"
+                onPress={() => {
+                  setTempName(userName);
+                  setEditingName(false);
+                }}
+                style={{ flex: 1 }}
+              />
+              <Button
+                label="Save"
+                onPress={handleSaveName}
+                style={{ flex: 1 }}
+              />
+            </View>
+          </View>
+        ) : (
+          <View>
+            <Text style={styles.nameDisplay}>{userName || 'Anonymous'}</Text>
+            <Button
+              label="Change name"
+              variant="secondary"
+              icon="edit"
+              onPress={() => setEditingName(true)}
+              style={styles.buttonSpacing}
+            />
+          </View>
+        )}
+      </Card>
+
+      <Card style={styles.cardSpacing}>
         <Text style={styles.sectionTitle}>Quick actions</Text>
         <Button
           label="How Bet That works"
@@ -46,7 +97,7 @@ const ProfileScreen = ({ navigation }) => {
       </Card>
       <Card style={styles.cardSpacing}>
         <Text style={styles.helper}>
-          Bet That never handles payments. All settlement happens offline.
+          💡 Bet That never handles payments. All settlement happens offline between friends.
         </Text>
       </Card>
     </Screen>
@@ -58,10 +109,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: COLORS.text,
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.md,
+  },
+  nameDisplay: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: COLORS.text,
+    marginBottom: SPACING.md,
+  },
+  nameActions: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+    marginTop: SPACING.md,
   },
   helper: {
     color: COLORS.muted,
+    lineHeight: 20,
   },
   buttonSpacing: {
     marginTop: SPACING.sm,

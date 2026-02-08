@@ -3,7 +3,7 @@ import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import { COLORS, SPACING } from '../../constants';
 
 const Screen = ({ children, scroll = true, style, contentStyle, refreshControl }) => {
-  if (!scroll) {
+  if (scroll === false) {
     return (
       <SafeAreaView style={[styles.safeArea, style]}>
         <View style={[styles.content, contentStyle]}>{children}</View>
@@ -15,6 +15,7 @@ const Screen = ({ children, scroll = true, style, contentStyle, refreshControl }
       <ScrollView
         contentContainerStyle={[styles.content, contentStyle]}
         keyboardShouldPersistTaps="handled"
+        scrollEnabled={scroll === true}
         showsVerticalScrollIndicator={false}
         refreshControl={refreshControl}
       >

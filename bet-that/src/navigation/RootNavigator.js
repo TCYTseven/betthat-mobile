@@ -1,4 +1,5 @@
 import React from 'react';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useOnboarding } from '../context/OnboardingContext';
 import MainTabs from './MainTabs';
@@ -11,34 +12,50 @@ import CreateSuccessScreen from '../screens/CreateSuccessScreen';
 import GuideScreen from '../screens/GuideScreen';
 import JoinBetScreen from '../screens/JoinBetScreen';
 import PoolDetailsScreen from '../screens/PoolDetailsScreen';
-import { LoadingSpinner } from '../components/common';
 import { COLORS } from '../constants';
 
 const Stack = createNativeStackNavigator();
 
+const LoadingScreen = () => (
+  <View style={loadingStyles.container}>
+    <ActivityIndicator size="large" color={COLORS.primary} />
+  </View>
+);
+
+const loadingStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.background,
+  },
+});
+
 const RootNavigator = () => {
   const { hasOnboarded, isLoading } = useOnboarding();
-
-  if (isLoading) {
-    return <LoadingSpinner label="Getting Bet That ready..." />;
-  }
 
   return (
     <Stack.Navigator
       screenOptions={{
-        headerShadowVisible: false,
-        headerTitleStyle: { color: COLORS.text },
         headerTintColor: COLORS.primary,
         headerStyle: { backgroundColor: COLORS.background },
       }}
     >
-      {!hasOnboarded ? (
+      {isLoading && (
+        <Stack.Screen
+          name="Loading"
+          component={LoadingScreen}
+          options={{ headerShown: false }}
+        />
+      )}
+      {!isLoading && !hasOnboarded && (
         <Stack.Screen
           name="Onboarding"
           component={OnboardingScreen}
           options={{ headerShown: false }}
         />
-      ) : (
+      )}
+      {!isLoading && hasOnboarded && (
         <Stack.Screen
           name="Main"
           component={MainTabs}

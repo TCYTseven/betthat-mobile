@@ -13,8 +13,8 @@ const ConfirmModal = ({
   onCancel,
 }) => (
   <Modal
-    transparent
-    visible={visible}
+    transparent={true}
+    visible={!!visible}
     animationType="fade"
     onRequestClose={onCancel}
   >

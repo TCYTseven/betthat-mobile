@@ -16,7 +16,7 @@ const Button = ({
   const isDisabled = disabled || loading;
   return (
     <Pressable
-      onPress={isDisabled ? null : onPress}
+      onPress={isDisabled ? undefined : onPress}
       style={({ pressed }) => [
         styles.base,
         styles[variant],
@@ -49,28 +49,29 @@ const Button = ({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: RADIUS.lg,
-    paddingVertical: 14,
-    paddingHorizontal: SPACING.lg,
+    borderRadius: 0,
+    paddingVertical: 16,
+    paddingHorizontal: SPACING.xl,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 48,
+    minHeight: 52,
   },
   primary: {
     backgroundColor: COLORS.primary,
   },
   secondary: {
     backgroundColor: '#FFFFFF',
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: COLORS.primary,
   },
   ghost: {
     backgroundColor: 'transparent',
   },
   label: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '500',
+    letterSpacing: 0.5,
   },
   primaryLabel: {
     color: '#FFFFFF',
@@ -82,10 +83,10 @@ const styles = StyleSheet.create({
     color: COLORS.muted,
   },
   pressed: {
-    opacity: 0.85,
+    opacity: 0.8,
   },
   disabled: {
-    opacity: 0.5,
+    opacity: 0.4,
   },
   icon: {
     marginRight: SPACING.sm,

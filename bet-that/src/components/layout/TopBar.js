@@ -13,7 +13,7 @@ const TopBar = ({ title = 'Bet That', rightIcon = 'help-circle', onRightPress })
         accessibilityRole="button"
         accessibilityLabel="Help"
       >
-        <Feather name={rightIcon} size={18} color={COLORS.primary} />
+        <Feather name={rightIcon} size={20} color={COLORS.muted} />
       </Pressable>
     ) : null}
   </View>
@@ -24,20 +24,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.xxl,
+    paddingBottom: SPACING.md,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: COLORS.primary,
+    fontSize: 13,
+    fontWeight: '600',
+    color: COLORS.muted,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   iconButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.highlight,
+    padding: SPACING.xs,
   },
 });
 

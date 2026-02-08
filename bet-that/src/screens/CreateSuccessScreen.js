@@ -1,15 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet, Share } from 'react-native';
-import { Screen, TopBar } from '../components/layout';
-import { Button, Card } from '../components/common';
+import { Screen } from '../components/layout';
+import { Button } from '../components/common';
 import { COLORS, SPACING } from '../constants';
 import { useBets } from '../context/BetContext';
-import { BET_LINK_BASE, CREATOR_LINK_BASE } from '../utils/links';
+import { BET_LINK_BASE } from '../utils/links';
+import { Feather } from '@expo/vector-icons';
 
 const shareLink = async (title, link) => {
   try {
     await Share.share({
-      message: `${title}\n${link}`,
+      message: `${title}\n\n${link}`,
     });
   } catch (error) {
     // Non-blocking.
@@ -24,84 +25,98 @@ const CreateSuccessScreen = ({ route, navigation }) => {
   if (!bet) {
     return (
       <Screen>
-        <TopBar title="Bet That" />
         <Text style={styles.title}>Bet not found</Text>
-        <Text style={styles.helper}>
-          We could not find this bet on the device.
-        </Text>
       </Screen>
     );
   }
 
   const betLink = `${BET_LINK_BASE}${bet.id}`;
-  const creatorLink = `${CREATOR_LINK_BASE}${bet.creatorId}`;
 
   return (
-    <Screen>
-      <TopBar title="Share your bet" />
-      <Text style={styles.title}>You are ready to share</Text>
-      <Text style={styles.helper}>
-        Send the event link to friends. Keep the creator link private so you can
-        resolve the outcome later.
-      </Text>
-      <Card>
-        <Text style={styles.cardTitle}>Event link</Text>
-        <Text style={styles.linkText}>{betLink}</Text>
+    <Screen scroll={false} contentStyle={styles.screen}>
+      <View style={styles.celebration}>
+        <View style={styles.iconCircle}>
+          <Feather name="check" size={48} color="#FFFFFF" />
+        </View>
+        <Text style={styles.title}>Event Created!</Text>
+        <Text style={styles.subtitle}>{bet.title}</Text>
+        <Text style={styles.code}>Code: {bet.id}</Text>
+      </View>
+
+      <View style={styles.actions}>
         <Button
-          label="Share event link"
-          onPress={() => shareLink(`Join the bet: ${bet.title}`, betLink)}
+          label="Share Your Event"
+          onPress={() => shareLink(`Join my bet: ${bet.title}`, betLink)}
           icon="share"
         />
-      </Card>
-      <Card style={styles.cardSpacing}>
-        <Text style={styles.cardTitle}>Creator link</Text>
-        <Text style={styles.linkText}>{creatorLink}</Text>
         <Button
-          label="Open creator view"
+          label="Open Event Page"
           variant="secondary"
-          onPress={() =>
-            navigation.navigate('CreatorDashboard', { creatorId: bet.creatorId })
-          }
-          icon="shield"
+          onPress={() => {
+            navigation.replace('Main', { screen: 'Home' });
+            setTimeout(() => {
+              navigation.navigate('BetDetail', { betId: bet.id });
+            }, 100);
+          }}
+          icon="arrow-right"
+          style={styles.secondaryButton}
         />
-      </Card>
-      <Card style={styles.cardSpacing}>
-        <Text style={styles.helper}>
-          Bet That never handles payments. Settle however your group prefers.
-        </Text>
-      </Card>
-      <Button
-        label="Open event page"
-        onPress={() => navigation.navigate('BetDetail', { betId: bet.id })}
-        icon="arrow-right"
-        style={styles.cardSpacing}
-      />
+      </View>
     </Screen>
   );
 };
 
 const styles = StyleSheet.create({
+  screen: {
+    padding: 0,
+    paddingBottom: 0,
+  },
+  celebration: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SPACING.xl,
+  },
+  iconCircle: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SPACING.xxl,
+  },
   title: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: SPACING.sm,
-  },
-  helper: {
-    color: COLORS.muted,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: SPACING.sm,
-  },
-  linkText: {
-    color: COLORS.primaryDark,
+    fontSize: 36,
+    fontWeight: '300',
+    color: '#FFFFFF',
+    letterSpacing: -1,
     marginBottom: SPACING.md,
   },
-  cardSpacing: {
-    marginTop: SPACING.md,
+  subtitle: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: 'rgba(255, 255, 255, 0.9)',
+    textAlign: 'center',
+    marginBottom: SPACING.lg,
+    paddingHorizontal: SPACING.lg,
+  },
+  code: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'rgba(255, 255, 255, 0.7)',
+    textTransform: 'uppercase',
+    letterSpacing: 2,
+  },
+  actions: {
+    padding: SPACING.xl,
+    paddingBottom: SPACING.xxxl,
+    gap: SPACING.md,
+    backgroundColor: COLORS.background,
+  },
+  secondaryButton: {
+    marginTop: SPACING.xs,
   },
 });
 

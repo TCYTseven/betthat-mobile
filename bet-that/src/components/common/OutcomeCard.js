@@ -14,14 +14,14 @@ const OutcomeCard = ({
   const isPressable = typeof onPress === 'function';
   return (
     <Pressable
-      onPress={isPressable ? onPress : null}
+      onPress={isPressable ? onPress : undefined}
       disabled={!isPressable}
       style={({ pressed }) => [
         styles.card,
         selected && styles.cardSelected,
         pressed && isPressable && styles.cardPressed,
       ]}
-      accessibilityRole={isPressable ? 'button' : undefined}
+      accessibilityRole={isPressable ? 'button' : 'none'}
       accessibilityLabel={`Outcome ${label}`}
     >
     <View style={styles.row}>
@@ -30,12 +30,12 @@ const OutcomeCard = ({
         <Text style={styles.total}>{formatAmount(total)}</Text>
       ) : null}
     </View>
-    {showShare ? (
+    {!!showShare ? (
       <View style={styles.barTrack}>
         <View style={[styles.barFill, { width: `${Math.round(share * 100)}%` }]} />
       </View>
     ) : null}
-    {showShare ? (
+    {!!showShare ? (
       <Text style={styles.shareText}>{Math.round(share * 100)}% of pool</Text>
     ) : null}
     </Pressable>
